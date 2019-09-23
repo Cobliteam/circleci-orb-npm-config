@@ -1,0 +1,33 @@
+---
+version: 2.1
+description: Changes npm configuration
+
+commands:
+  add-registry:
+    description: Add a registry to .npmrc
+    parameters:
+      registry-prurl:
+        description: |
+          "protocol-relative URL (ex: //registry.domain.net/path/)"
+        type: string
+      scope:
+        description: registry scope
+        type: string
+      auth-token:
+        description: 
+        type: string
+    steps:
+      - run:
+          name: Set NPM registry URL
+          command: >
+            scope=<< parameters.scope >>;
+            registry_prurl=<< parameters.registry-prurl >>;
+            npm config set "${scope}:registry" "https:$registry_prurl"
+      - run:
+          name: Set auth token for NPM registry if provided
+          command: |
+            if [ "<< parameters.auth-token >>" != "" ]; then
+            registry_prurl=<< parameters.registry-prurl >>;
+            auth_token=<< parameters.auth-token >>;
+            echo "${registry_prurl}:_authToken=${auth_token}" >> ~/.npmrc
+            fi;
