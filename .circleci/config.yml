@@ -1,0 +1,27 @@
+version: 2.1
+
+definitions:
+  orb-dev-ref: &orb-dev-ref cobli/npm-config@dev:${CIRCLE_BRANCH}
+  orb-prod-ref: &orb-prod-ref cobli/npm-config@${CIRCLE_TAG}
+  publish-parameters: &publish-parameters
+    context: circleci-api-token
+    orb-path: src/orb.yml
+    validate: true
+  
+orbs:
+  orb-tools: circleci/orb-tools@8.27.4
+
+workflows:
+  btd:
+    jobs:
+      - orb-tools/publish:
+          <<: *publish-parameters      
+          orb-ref: *orb-dev-ref
+      - orb-tools/publish:
+          <<: *publish-parameters
+          orb-ref: *orb-prod-ref
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+            branches:
+              ignore: /.*/

@@ -1,0 +1,58 @@
+---
+version: 2.1
+description: Changes npm configuration
+
+examples:
+  setting_registry:
+    description: Sets a registry in NPM client (~/.npmrc) 
+    usage:
+      version: 2.1
+      orbs:
+        npm-config: cobli/npm-config@x.x.x
+      jobs:
+        test:
+          docker:
+            - image: circleci/node:9.11.2
+          steps:
+            - checkout
+            - npm-config/set-registry:
+                registry-prurl: //your.registry.domain.net/path/
+                scope: "@your-scope"
+                auth-token: "your-repo-token"
+            - run:
+                name: Download depencies
+                command: yarn
+            - run:
+                name: Test
+                command: yarn test
+
+commands:
+  set-registry:
+    description: Sets a registry to .npmrc
+    parameters:
+      registry-prurl:
+        description: |
+          protocol-relative URL (ex: //registry.domain.net/path/)
+        type: string
+      scope:
+        description: registry scope
+        type: string
+      auth-token:
+        description: authorization token for private repos
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: Set NPM registry URL
+          command: >
+            scope=<< parameters.scope >>;
+            registry_prurl=<< parameters.registry-prurl >>;
+            npm config set "${scope}:registry" "https:$registry_prurl"
+      - run:
+          name: Set auth token for NPM registry if provided
+          command: |
+            if [ "<< parameters.auth-token >>" != "" ]; then
+            registry_prurl=<< parameters.registry-prurl >>;
+            auth_token=<< parameters.auth-token >>;
+            echo "${registry_prurl}:_authToken=${auth_token}" >> ~/.npmrc
+            fi;
