@@ -1,5 +1,5 @@
-# npm config for CircleCI
+# npm config commands for CircleCI
 
-[CircleCI Orb](https://circleci.com/docs/2.0/orb-intro/) commands to change NPM configurations
+[CircleCI Orb](https://circleci.com/docs/2.0/orb-intro/) commands to change NPM configuration
 
-See [examples](src/orb.yaml)
+See [examples](https://circleci.com/orbs/registry/orb/cobli/npm-config#usage-examples)
